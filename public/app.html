@@ -1,0 +1,71 @@
+<!-- app.html -->
+<div class="container">
+
+        <!-- HEADER AND TODO COUNT -->
+        <div class="jumbotron text-center">
+            <span>All Todos <span class="label label-info">{{ todos.length }}</span></span>
+        </div>
+		
+		<div class="form-group has-feedback" ng-show="todos.length">
+			<input type="text" class="form-control input-md text-center" ng-model="title">
+			<i class="glyphicon glyphicon-search form-control-feedback"></i>
+		</div>
+		
+        <!-- TODO LIST -->
+        <div class="table-responsive">
+        	<table id="todo-list" class="table">
+        		<thead ng-show="todos.length">
+					<tr>
+						<!-- <th>#</th> -->
+						<th></th>
+						<th>Title</th>
+						<!-- <th>Created On</th> -->
+						<th>End Date</th>
+						<th></th>
+					</tr>
+				</thead>
+                <!-- LOOP OVER THE TODOS IN $scope.todos -->
+            	<tbody>
+             	   <tr ng-repeat="todo in todos | filter:title | orderBy: 'endDate'" ng-class="{ 'done-{{todo.done}}': isdone, 'red': isGone(todo.endDate, todo.done) }" >
+             	   		<td style="text-align:center;"><input type="checkbox" name="done" id="{{ todo.id }}" ng-model="isdone" ng-init="isdone=todo.done === 1 ? true : false" ng-click="updateTodo($event, todo.id)" /></span></td>
+             	   		<!-- <td>{{ todo.id }}</td> -->
+                		<td>{{ todo.text }}</td>
+                		<!-- <td>{{ todo.formattedCreatedOn}}</td> -->
+                		<td>{{ todo.endDate | date : "MMM dd, yyyy" }}</td>
+                		<td>
+                			<button class="delete-button" ng-click="deleteTodo(todo.id)">
+    							<span class="glyphicon glyphicon-remove"></span>
+  							</button>
+                		</td>
+                	</tr>
+            	</tbody>
+        	</table>
+		<div>
+		
+        <!-- FORM TO CREATE TODOS -->
+        <div id="todo-form" class="row">
+            <div class="col-sm-8 col-sm-offset-2 text-center">
+                <form>
+                    <div class="form-group">
+
+                        <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
+                        <div style="width:45%;display:inline-block;">
+                        	<input type="text" class="form-control input-lg text-center" placeholder="Add your todo" ng-model="formData.text">
+                    	</div>
+                    	
+                    	<div class="form-group has-feedback" style="width:43%;display:inline-block;">
+                    		<input type="text" class="form-control input-lg text-center datepicker" ng-model="formData.endDate" placeholder="Choose end date" datepicker/>
+                    		<i class="glyphicon glyphicon-calendar form-control-feedback"></i>
+						</div>
+						
+						<!-- createToDo() WILL CREATE NEW TODOS -->
+                    	<button type="submit" class="btn btn-primary btn-lg" ng-click="createTodo()" style="display:inline-block;"><b>+</b></button>
+                    </div>
+                    
+                </form>
+            </div>
+        </div>
+
+		<div ng-show="!todos.length" style="text-align:center;font-size:40px;">No Todos</div>
+
+</div>

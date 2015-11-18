@@ -1,0 +1,67 @@
+<!-- newtasksheet.html -->
+<div class="container">
+        
+		<div>
+			<input type="text" class="form-control input-lg text-center" style="margin-bottom:30px;border:none;border-bottom:1px solid black;" placeholder="Title">
+		</div>
+		
+		
+		<!-- FORM TO CREATE TODOS -->
+        <div id="todo-form" class="row">
+            <div class="col-sm-8 col-sm-offset-2 text-center">
+                <form>
+                    <div class="form-group">
+
+                        <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
+                        <div style="width:45%;display:inline-block;">
+                        	<input type="text" class="form-control input-lg text-center" placeholder="Add your todo" ng-model="formData.text">
+                    	</div>
+                    	
+                    	<div class="form-group has-feedback" style="width:43%;display:inline-block;">
+                    		<input type="text" class="form-control input-lg text-center datepicker" ng-model="formData.endDate" placeholder="Choose end date" datepicker/>
+                    		<i class="glyphicon glyphicon-calendar form-control-feedback"></i>
+						</div>
+						
+						<!-- createToDo() WILL CREATE NEW TODOS -->
+						<div style="display:inline-block;">
+							<button type="submit" class="btn btn-primary btn-lg" ng-click="createTodo()"><b>+</b></button>
+						</div>
+                    </div>
+                </form>
+            </div>
+        </div>
+		
+        <!-- TODO LIST -->
+        <div class="table-responsive">
+        <table id="todo-list" class="table">
+        	<thead ng-show="todos.length">
+				<tr>
+					<!-- <th>#</th> -->
+					<th></th>
+					<th>Title</th>
+					<!-- <th>Created On</th> -->
+					<th>End Date</th>
+					<th></th>
+				</tr>
+			</thead>
+                <!-- LOOP OVER THE TODOS IN $scope.todos -->
+            <tbody>
+                <tr ng-repeat="todo in todos | filter:title | orderBy: 'endDate'" ng-class="{ 'done-{{todo.done}}': isdone, 'red': isGone(todo.endDate, todo.done) }" >
+                	<td style="text-align:center;"><input type="checkbox" name="done" id="{{ todo.id }}" ng-model="isdone" ng-init="isdone=todo.done === 1 ? true : false" ng-click="updateTodo($event, todo.id)" /></span></td>
+                	<!-- <td>{{ todo.id }}</td> -->
+                	<td>{{ todo.text }}</td>
+                	<!-- <td>{{ todo.formattedCreatedOn}}</td> -->
+                	<td>{{ todo.endDate | date : "MMM dd, yyyy" }}</td>
+                	<td>
+                		<button class="delete-button" ng-click="deleteTodo(todo.id)">
+    						<span class="glyphicon glyphicon-remove"></span>
+  						</button>
+                	</td>
+                </tr>
+            </tbody>
+        </table>
+		<div>
+		
+		<div ng-show="!todos.length">No Todos</div>
+		
+</div>

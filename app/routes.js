@@ -17,7 +17,6 @@ connection.connect(function(err){
 	}
 });
 
-
 function getTodos(res) {
 	connection.query('SELECT * from todo', function(err, todos, fields) {
 		//connection.end();
@@ -40,8 +39,9 @@ module.exports = function(app) {
 
         // create a todo, information comes from AJAX request from Angular
         var post = req.body.text;
-        
-        connection.query('INSERT into todo(text) values("' + post + '")', function(err, todos, fields) {
+        var endDate = req.body.endDate;
+        //connection.query('INSERT into todo(text, createdOn, endDate, done) values("' + post + '", now(), 0)', function(err, todos, fields) {
+        connection.query('INSERT into todo(text, createdOn, endDate, done) values("' + post + '", now(), "' + endDate + '", 0)', function(err, todos, fields) {
             if (err)
             	console.log(err);
                 // res.send(err);
@@ -62,6 +62,30 @@ module.exports = function(app) {
             // get and return all the todos after you create another
             getTodos(res);
         });
+    });
+    
+    // update a todo
+    app.put('/api/todos/:todo_id/:action', function(req, res) {
+        var id = req.params.todo_id;
+        var action = req.params.action;
+        if(action === 'done') {
+        	connection.query('UPDATE todo SET done = 1 where id = ' + id , function(err, todo) {
+            	if (err)
+                	console.log(err);
+
+            	// get and return all the todos after you create another
+            	getTodos(res);
+        	});
+        }
+        else {
+        	connection.query('UPDATE todo SET done = 0 where id = ' + id , function(err, todo) {
+            	if (err)
+                	console.log(err);
+
+            	// get and return all the todos after you create another
+            	getTodos(res);
+        	});
+        }
     });
 
 	// application -------------------------------------------------------------
