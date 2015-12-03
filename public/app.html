@@ -26,7 +26,7 @@
 				</thead>
                 <!-- LOOP OVER THE TODOS IN $scope.todos -->
             	<tbody>
-             	   <tr ng-repeat="todo in todos | filter:title | orderBy: 'endDate'" ng-class="{ 'done-{{todo.done}}': isdone, 'red': isGone(todo.endDate, todo.done) }" >
+             	   <tr ng-repeat="todo in todos | filter:title | orderBy: 'endDate' | limitFromTo:(currentPage-1)*itemsPerPage:(currentPage*itemsPerPage)" ng-class="{ 'done-{{todo.done}}': isdone , 'red': isGone(todo.endDate, todo.done) }" >
              	   		<td style="text-align:center;"><input type="checkbox" name="done" id="{{ todo.id }}" ng-model="isdone" ng-init="isdone=todo.done === 1 ? true : false" ng-click="updateTodo($event, todo.id)" /></span></td>
              	   		<!-- <td>{{ todo.id }}</td> -->
                 		<td>{{ todo.text }}</td>
@@ -41,6 +41,10 @@
             	</tbody>
         	</table>
 		<div>
+		
+		<div class="text-center">
+			<pagination ng-show="todos.length" boundary-links="true" max-size="maxSize" items-per-page="itemsPerPage" total-items="todos.length" ng-model="currentPage"></pagination>
+		</div>
 		
         <!-- FORM TO CREATE TODOS -->
         <div id="todo-form" class="row">

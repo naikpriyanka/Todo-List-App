@@ -1,18 +1,18 @@
 <!-- alerts.html -->
 <div class="container">
 
-        <!-- HEADER AND TODO COUNT -->
-        <div class="jumbotron text-center">
-            <span>Alerts <span class="label label-info" style="background-color:red;">{{ todos.length }}</span></span>
-        </div>
+    <!-- HEADER AND TODO COUNT -->
+    <div class="jumbotron text-center">
+        <span>Alerts <span class="label label-info" style="background-color:red;">{{ todos.length }}</span></span>
+    </div>
 
-		<div class="form-group has-feedback" ng-show="todos.length">
-			<input type="text" class="form-control input-md text-center" ng-model="title">
-			<i class="glyphicon glyphicon-search form-control-feedback"></i>
-		</div>
+	<div class="form-group has-feedback" ng-show="todos.length">
+		<input type="text" class="form-control input-md text-center" ng-model="title">
+		<i class="glyphicon glyphicon-search form-control-feedback"></i>
+	</div>
 		
-        <!-- TODO LIST -->
-        <div class="table-responsive">
+    <!-- TODO LIST -->
+    <div class="table-responsive">
         <table id="todo-list" class="table">
         	<thead ng-show="todos.length">
 				<tr>
@@ -25,7 +25,7 @@
 			</thead>
                 <!-- LOOP OVER THE TODOS IN $scope.todos -->
             <tbody>
-                <tr ng-repeat="todo in todos" ng-class="{ 'done-{{todo.done}}': isdone }" >
+                <tr ng-repeat="todo in todos | limitFromTo:(currentPage-1)*itemsPerPage:(currentPage*itemsPerPage)" ng-class="{ 'done-{{todo.done}}': isdone }" >
                 	<td style="text-align:center;"><input type="checkbox" name="done" id="{{ todo.id }}" ng-model="isdone" ng-init="isdone=todo.done === 1 ? true : false" ng-click="updateTodo($event, todo.id)" /></span></td>
                 	<!-- <td>{{ todo.id }}</td> -->
                 	<td>{{ todo.text }}</td>
@@ -40,7 +40,12 @@
                 </tr>
             </tbody>
         </table>
-		<div>
+	<div>
 		
-		<div ng-show="!todos.length" style="text-align:center;font-size:40px;">No Todos</div>
+	<div ng-show="!todos.length" style="text-align:center;font-size:40px;">No Todos</div>
+	
+	<div class="text-center">
+		<pagination ng-show="todos.length" boundary-links="true" max-size="maxSize" items-per-page="itemsPerPage" total-items="todos.length" ng-model="currentPage"></pagination>
+	</div>
+	
 </div>

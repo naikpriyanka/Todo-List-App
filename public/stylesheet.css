@@ -23,6 +23,10 @@ html {
 	border-color:#ccc;
 }
 
+.text-center {
+	text-align:center;
+}
+
 .delete-button:hover,.delete-button:focus {
 	color:gray;
 	text-decoration:none

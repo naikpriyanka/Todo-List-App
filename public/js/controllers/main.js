@@ -1,4 +1,4 @@
-var todoApp = angular.module('todoController', []);
+var todoApp = angular.module('todoController', ['ui.bootstrap']);
 
 todoApp.directive("datepicker", function () {
   	return {
@@ -22,19 +22,32 @@ todoApp.directive("datepicker", function () {
     	}
   	}
 });
+
+todoApp.filter('limitFromTo', function(){
+    return function(input, from, to){
+        return (input != undefined)? input.slice(from, to) : '';
+    }
+});
 	
 // inject the Todo service factory into our controller
 todoApp.controller('mainController', ['$scope', '$filter', 'Todos', function($scope, $filter, Todos) {
 		$scope.formData = {};
 		$scope.loading = true;
 		$scope.count = 0;
+
+		$scope.todos = [];  
+  		$scope.itemsPerPage = 5;
+  		$scope.currentPage = 1;  
+  		$scope.maxSize = 3;
 		
 		// GET =====================================================================
 		// when landing on the page, get all todos and show them
 		// use the service to get all the todos
 		Todos.get()
 			.success(function(data) {
-				$scope.todos = data;
+				for(var i = 0; i < data.length; i++) {
+      				$scope.todos.push(data[i]);
+      			}
 				$scope.loading = false;
 				angular.forEach($scope.todos, function(todo){
          			todo.formattedCreatedOn = $filter('date')(new Date(todo.createdOn),'MMM dd, yyyy  -  hh:mm a');
@@ -100,7 +113,7 @@ todoApp.controller('mainController', ['$scope', '$filter', 'Todos', function($sc
 		//If the end date has already past
 		$scope.isGone = function (val, done) {
         	var isRed = false;
-        	if (val <= moment().format('YYYY-M-D') && done != 1) {
+        	if (moment(val).format('YYYY-M-D') <= moment().format('YYYY-M-D') && done != 1) {
             	isRed = true;
         	}
         	return isRed;
@@ -112,18 +125,23 @@ todoApp.controller('alertController', ['$scope','$filter', 'Todos', function($sc
 		$scope.formData = {};
 		$scope.loading = true;
 		
+		$scope.todos = [];  
+  		$scope.itemsPerPage = 5;
+  		$scope.currentPage = 1;  
+  		$scope.maxSize = 3;
+		
 		// GET =====================================================================
 		// when landing on the page, get all todos and show them
 		// use the service to get all the todos
 		Todos.get()
 			.success(function(data) {
-				$scope.todos = [];
+				// $scope.todos = [];
 				$scope.loading = false;
 				angular.forEach($scope.todos, function(todo){
          			todo.formattedCreatedOn = $filter('date')(new Date(todo.createdOn),'MMM dd, yyyy  -  hh:mm a');
       			});
       			for(var i = 0; i < data.length; i++) {
-      				if (data[i].endDate <= moment().format('YYYY-M-D') && data[i].done != 1) {
+      				if (moment(data[i].endDate).format('YYYY-M-D') <= moment().format('YYYY-M-D') && data[i].done != 1) {
       					$scope.todos.push(data[i]);
       				}
       			}
@@ -144,7 +162,7 @@ todoApp.controller('alertController', ['$scope','$filter', 'Todos', function($sc
          				todo.formattedCreatedOn = $filter('date')(new Date(todo.createdOn),'MMM dd, yyyy  -  hh:mm a');
       				});
       				for(var i = 0; i < data.length; i++) {
-      					if (data[i].endDate <= moment().format('YYYY-M-D') && data[i].done != 1) {
+      					if (moment(data[i].endDate).format('YYYY-M-D') <= moment().format('YYYY-M-D') && data[i].done != 1) {
       						$scope.todos.push(data[i]);
       					}
       				}
@@ -168,7 +186,7 @@ todoApp.controller('alertController', ['$scope','$filter', 'Todos', function($sc
          				todo.formattedCreatedOn = $filter('date')(new Date(todo.createdOn),'MMM dd, yyyy  -  hh:mm a');
       				});
       				for(var i = 0; i < data.length; i++) {
-      					if (data[i].endDate <= moment().format('YYYY-M-D') && data[i].done != 1) {
+      					if (moment(data[i].endDate).format('YYYY-M-D') <= moment().format('YYYY-M-D') && data[i].done != 1) {
       						$scope.todos.push(data[i]);
       					}
       				}
@@ -177,66 +195,3 @@ todoApp.controller('alertController', ['$scope','$filter', 'Todos', function($sc
 		};
 		
 }]);
-
-/*todoApp.factory('MyService', ['$scope', '$filter', 'Todos', function($scope, $filter, Todos) {
-
-	var sharedService = {};
-	
-	sharedService.getTodos = function() {
-		Todos.get()
-			.success(function(data) {
-				$scope.todos = [];
-				$scope.loading = false;
-				angular.forEach($scope.todos, function(todo){
-         			todo.formattedCreatedOn = $filter('date')(new Date(todo.createdOn),'MMM dd, yyyy  -  hh:mm a');
-      			});
-      			for (var i = 0; i < data.length; i++) {
-  					// use i as an array index
-  					if (data[i].endDate <= moment().format('YYYY-M-D') && data[i].done != 1) {
-						$scope.todos.push(data[i]);
-					}
-				}
-			});
-	};
-	
-	sharedService.createTodo = function() {
-				Todos.create($scope.formData)
-					// if successful creation, call our get function to get all the new todos
-					.success(function(data) {
-						$scope.loading = false;
-                		$scope.formData = {}; // clear the form so our user is ready to enter another
-                		$scope.todos = data;  // assign our new list of todos
-                		angular.forEach($scope.todos, function(todo){
-         					todo.formattedCreatedOn = $filter('date')(new Date(todo.createdOn),'MMM dd, yyyy  -  hh:mm a');
-      					});
-            		});	
-			
-	};
-	
-	sharedService.deleteTodo = function(id) {
-			Todos.delete(id)
-				// if successful creation, call our get function to get all the new todos
-				.success(function(data) {
-					$scope.loading = false;
-					$scope.todos = data; // assign our new list of todos
-					angular.forEach($scope.todos, function(todo){
-         				todo.formattedCreatedOn = $filter('date')(new Date(todo.createdOn),'MMM dd, yyyy  -  hh:mm a');
-      				});
-				});
-	};
-	
-	sharedService.updateTodo = function(id, action) {
-			Todos.update(id, action)
-				// if successful creation, call our get function to get all the new todos
-				.success(function(data) {
-					$scope.loading = false;
-					$scope.todos = data; // assign our new list of todos
-					angular.forEach($scope.todos, function(todo){
-         				todo.formattedCreatedOn = $filter('date')(new Date(todo.createdOn),'MMM dd, yyyy  -  hh:mm a');
-      				});
-				});
-	};
-
-	return sharedService;
-	
-}]);*/
