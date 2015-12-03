@@ -17,8 +17,8 @@
                         	<input type="text" class="form-control input-lg text-center" placeholder="Add your todo" ng-model="formData.text">
                     	</div>
                     	
-                    	<div class="form-group has-feedback" style="width:43%;display:inline-block;">
-                    		<input type="text" class="form-control input-lg text-center datepicker" ng-model="formData.endDate" placeholder="Choose end date" datepicker/>
+                    	<div class="form-group has-feedback" style="width:43%;display:inline-block;z-index:1;">
+                    		<input type="text" class="form-control input-lg text-center datepicker" ng-model="formData.endDate" placeholder="Choose end date" mydatepicker/>
                     		<i class="glyphicon glyphicon-calendar form-control-feedback"></i>
 						</div>
 						
@@ -46,7 +46,7 @@
 			</thead>
                 <!-- LOOP OVER THE TODOS IN $scope.todos -->
             <tbody>
-                <tr ng-repeat="todo in todos | filter:title | orderBy: 'endDate'" ng-class="{ 'done-{{todo.done}}': isdone, 'red': isGone(todo.endDate, todo.done) }" >
+                <tr ng-repeat="todo in todos | filter:title | orderBy: 'endDate' | limitFromTo:(currentPage-1)*itemsPerPage:(currentPage*itemsPerPage)" ng-class="{ 'done-{{todo.done}}': isdone, 'red': isGone(todo.endDate, todo.done) }" >
                 	<td style="text-align:center;"><input type="checkbox" name="done" id="{{ todo.id }}" ng-model="isdone" ng-init="isdone=todo.done === 1 ? true : false" ng-click="updateTodo($event, todo.id)" /></span></td>
                 	<!-- <td>{{ todo.id }}</td> -->
                 	<td>{{ todo.text }}</td>
@@ -61,6 +61,10 @@
             </tbody>
         </table>
 		<div>
+		
+		<div class="text-center">
+			<pagination ng-show="todos.length" boundary-links="true" max-size="maxSize" items-per-page="itemsPerPage" total-items="todos.length" ng-model="currentPage"></pagination>
+		</div>
 		
 		<div ng-show="!todos.length">No Todos</div>
 		

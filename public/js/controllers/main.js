@@ -1,6 +1,6 @@
 var todoApp = angular.module('todoController', ['ui.bootstrap']);
 
-todoApp.directive("datepicker", function () {
+todoApp.directive("mydatepicker", function () {
   	return {
     	restrict: "A",
     	require: "ngModel",
